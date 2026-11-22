@@ -1,26 +1,412 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ------------------------------------------------------------------
+ * Design tokens
+ * Breakpoints mirror the original Elementor setup (mobile ≤767,
+ * mobile-extra ≤880, tablet ≤1024, tablet-extra ≤1200, laptop ≤1366),
+ * expressed mobile-first.
+ * ------------------------------------------------------------------ */
+@theme {
+  --breakpoint-sm: 569px;
+  --breakpoint-md: 768px;
+  --breakpoint-mx: 881px;
+  --breakpoint-lg: 1025px;
+  --breakpoint-xl: 1201px;
+  --breakpoint-2xl: 1367px;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: #2df4a1;
+  --color-primary-hover: #28db90;
+  --color-body: #5a5a5a;
+  --color-muted: #a3a3a3;
+  --color-accent: #000000;
+  --color-line: #dedede;
+  --color-beige: #f1ece7;
+  --color-dark: #252525;
+  --color-badge: #e73a2b;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-anton: var(--font-anton-family), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-unbounded: var(--font-unbounded-family), "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --ease-smooth: cubic-bezier(0.38, 0.005, 0.215, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-spin-slow: rotate-360 12s linear infinite;
+
+  @keyframes rotate-360 {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------
+ * Theme icon font (glyphs taken from the original theme)
+ * ------------------------------------------------------------------ */
+@font-face {
+  font-family: "gamico-icon";
+  src:
+    url("/fonts/gamico-icon.woff2") format("woff2"),
+    url("/fonts/gamico-icon.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.gi {
+  font-family: "gamico-icon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  display: inline-block;
+  speak: never;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------ */
+@layer base {
+  html {
+    overflow-x: hidden;
+    overflow-x: clip;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: #ffffff;
+    color: var(--color-body);
+    font-family: var(--font-unbounded);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.7142857143;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    overflow-x: clip;
+    word-wrap: break-word;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-anton);
+    font-weight: 400;
+    color: var(--color-accent);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ::selection {
+    background: var(--color-primary);
+    color: var(--color-accent);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Layout utilities
+ * ------------------------------------------------------------------ */
+
+/* Boxed container: 1290px content + 30px gutters (15px on mobile). */
+@utility site-container {
+  width: 100%;
+  max-width: 1350px;
+  margin-inline: auto;
+  padding-inline: 15px;
+
+  @media (width >= 768px) {
+    padding-inline: 30px;
+  }
+}
+
+/* Rounded top edge used by stacked sections (80 / 40 / 20px). */
+@utility rounded-section {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+
+  @media (width >= 768px) {
+    border-top-left-radius: 40px;
+    border-top-right-radius: 40px;
+  }
+
+  @media (width >= 1025px) {
+    border-top-left-radius: 80px;
+    border-top-right-radius: 80px;
+  }
+}
+
+/* Pulls a rounded section up over the previous one (-90 / -40 / -20px). */
+@utility overlap-section {
+  margin-top: -20px;
+
+  @media (width >= 768px) {
+    margin-top: -40px;
+  }
+
+  @media (width >= 1025px) {
+    margin-top: -90px;
+  }
+}
+
+/* Hollow (outlined) display text. Stroke colour comes from --stroke-color. */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke-width: var(--stroke-width, 2px);
+  -webkit-text-stroke-color: var(--stroke-color, #000000);
+}
+
+/* Big two-line section titles ("OUR / GAMES", 140 / 100 / 80 / 56px). */
+@utility display-title {
+  font-family: var(--font-anton);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.95;
+  font-size: 56px;
+
+  @media (width >= 768px) {
+    font-size: 80px;
+  }
+
+  @media (width >= 1025px) {
+    font-size: 100px;
+  }
+
+  @media (width >= 1201px) {
+    font-size: 140px;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Entrance animations (ported from the theme's opalMoveUp / opalScaleUp)
+ * ------------------------------------------------------------------ */
+@keyframes opal-move-up {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes opal-scale-up {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reveal {
+  opacity: 0;
+}
+
+.reveal.is-visible {
+  animation-duration: 0.75s;
+  animation-fill-mode: both;
+  animation-timing-function: ease;
+}
+
+.reveal.is-visible[data-animation="move-up"] {
+  animation-name: opal-move-up;
+}
+
+.reveal.is-visible[data-animation="scale-up"] {
+  animation-name: opal-scale-up;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible {
+    opacity: 1;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .motion-safe-only {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Buttons — themed "ink fill" hover from the original:
+ * a dark circle scales out from the centre while the corner radius
+ * squares off.
+ * ------------------------------------------------------------------ */
+@layer components {
+  .btn {
+    --btn-h: 70px;
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+    padding: 20px 45px;
+    border-radius: 4px 4px 24px 4px;
+    font-family: var(--font-anton);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.625;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-accent);
+    background: var(--color-primary);
+    transition:
+      color 0.3s ease,
+      border-radius 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  .btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    width: calc(var(--btn-h) * 8);
+    height: calc(var(--btn-h) * 8);
+    margin-top: calc(var(--btn-h) * -4);
+    margin-left: calc(var(--btn-h) * -4);
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0;
+    transform: scale(0);
+    transform-origin: center;
+    transition:
+      transform 0.8s var(--ease-smooth),
+      opacity 0.2s var(--ease-smooth);
+  }
+
+  .btn:hover,
+  .btn:focus-visible {
+    color: #ffffff;
+    border-radius: 4px;
+  }
+
+  .btn:hover::before,
+  .btn:focus-visible::before {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      transform 0.8s var(--ease-smooth),
+      opacity 0s;
+  }
+
+  .btn-white {
+    background: #ffffff;
+  }
+
+  .btn .gi,
+  .btn-link .gi {
+    font-size: 14px;
+    margin-top: -2px;
+    transition: transform 0.3s ease;
+  }
+
+  .btn:hover .gi,
+  .btn-link:hover .gi,
+  .group:hover .group-hover-rotate {
+    transform: rotate(45deg);
+  }
+
+  .btn-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-anton);
+    font-size: 16px;
+    line-height: 1.625;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    transition: color 0.3s ease;
+  }
+
+  .btn-link .gi {
+    color: var(--color-primary);
+  }
+
+  .btn-link:hover {
+    color: var(--color-primary);
+  }
+
+  /* Round white slider arrows */
+  .slider-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 9999px;
+    background: #ffffff;
+    color: var(--color-accent);
+    font-size: 16px;
+    box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+  }
+
+  .slider-arrow:hover {
+    color: #ffffff;
+    background: var(--color-primary);
+  }
+}
+
+/* Footer giant ghost text: transparent stroke reveals a fading gradient. */
+.ghost-title {
+  color: var(--color-primary);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 50%, rgba(255, 255, 255, 0) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 4px transparent;
+}
+
+/* Swiper pagination dots (team popup) */
+.team-swiper .swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  margin: 0 6px !important;
+  background: var(--color-muted);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.team-swiper .swiper-pagination-bullet-active {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+  border: 2px solid var(--color-primary);
+  opacity: 1;
 }
