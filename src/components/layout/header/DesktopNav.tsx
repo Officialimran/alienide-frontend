@@ -20,9 +20,11 @@ export function DesktopNav({ items, className }: DesktopNavProps) {
     <nav aria-label="Main" className={className}>
       <ul className="m-0 flex list-none items-center p-0">
         {items.map((item) => (
-          <li key={item.label} className="group/nav relative">
+          <li key={item.id ?? item.href + item.label} className="group/nav relative">
             <Link
               href={item.href}
+              target={item.newTab ? "_blank" : undefined}
+              rel={item.newTab ? "noopener noreferrer" : undefined}
               aria-current={isActiveItem(item, pathname) ? "page" : undefined}
               aria-haspopup={item.children ? "true" : undefined}
               className="flex items-center gap-[7px] px-[15px] py-[38px] font-unbounded text-[12px] leading-[1.6667] font-medium text-white uppercase transition-colors duration-300 group-hover/nav:text-primary group-focus-within/nav:text-primary xl:px-[18px]"
@@ -41,9 +43,11 @@ export function DesktopNav({ items, className }: DesktopNavProps) {
                 )}
               >
                 {item.children.map((child) => (
-                  <li key={child.label}>
+                  <li key={child.id ?? child.href + child.label}>
                     <Link
                       href={child.href}
+                      target={child.newTab ? "_blank" : undefined}
+                      rel={child.newTab ? "noopener noreferrer" : undefined}
                       className={cn(
                         "block w-full px-[45px] py-[7px] text-[14px] font-normal transition-colors duration-300 hover:text-primary",
                         isCurrent(child.href, pathname) ? "text-accent underline" : "text-body",

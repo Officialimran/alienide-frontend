@@ -1,5 +1,7 @@
-import Image from "next/image";
+import { CmsImage } from "@/components/ui/CmsImage";
+import { FeatureIcon } from "@/components/ui/FeatureIcon";
 import { Reveal } from "@/components/ui/Reveal";
+import { RichText } from "@/components/ui/RichText";
 import { cn } from "@/lib/cn";
 import type { DetailFeature } from "@/types";
 
@@ -19,18 +21,33 @@ export function RuledHeading({ children }: { children: string }) {
 }
 
 /** 2×2 grid of illustrated features (stacked on mobile). */
-export function DetailFeatures({ heading, features }: { heading: string; features: DetailFeature[] }) {
+export function DetailFeatures({
+  heading,
+  description,
+  features,
+}: {
+  heading: string;
+  /** CMS HTML shown under the heading. */
+  description?: string;
+  features: DetailFeature[];
+}) {
   const last = features.length - 1;
+  if (features.length === 0) return null;
 
   return (
     <section className="site-container mb-[60px] mx:mb-[80px] xl:mb-[150px]">
       <RuledHeading>{heading}</RuledHeading>
+      {description && (
+        <Reveal className="mx-auto -mt-[30px] mb-[60px] max-w-[760px] text-center">
+          <RichText html={description} className="[&_p]:m-0 [&_p+p]:mt-4" />
+        </Reveal>
+      )}
       <ul className="m-0 flex list-none flex-wrap p-0">
         {features.map((f, i) => {
           const lastRow = i >= features.length - (features.length % 2 || 2);
           return (
             <li
-              key={f.title}
+              key={`${f.title}-${i}`}
               className={cn(
                 "w-full text-center md:w-1/2 xl:px-[80px]",
                 i % 2 === 0 ? "md:pr-[40px]" : "md:pl-[40px]",
@@ -38,17 +55,25 @@ export function DetailFeatures({ heading, features }: { heading: string; feature
               )}
             >
               <Reveal>
-                <Image
-                  src={f.image.src}
-                  alt={f.title}
-                  width={f.image.w}
-                  height={f.image.h}
-                  className={cn("mx-auto mb-[30px] max-w-full", imageGap[i % imageGap.length])}
-                />
+                {f.image ? (
+                  <CmsImage
+                    src={f.image.src}
+                    alt={f.title}
+                    width={f.image.w}
+                    height={f.image.h}
+                    className={cn("mx-auto mb-[30px] h-auto max-h-[330px] w-auto max-w-full", imageGap[i % imageGap.length])}
+                  />
+                ) : (
+                  f.icon && (
+                    <span className="mx-auto mb-[30px] flex h-[160px] w-[160px] items-center justify-center rounded-full bg-beige text-[72px] text-primary md:mb-[40px] xl:h-[200px] xl:w-[200px] xl:text-[96px]">
+                      <FeatureIcon icon={f.icon} />
+                    </span>
+                  )
+                )}
                 <h3 className="m-0 mb-[15px] font-anton text-[24px] leading-none font-normal text-accent uppercase">
                   {f.title}
                 </h3>
-                <p className="m-0">{f.text}</p>
+                {f.text && <p className="m-0 whitespace-pre-line">{f.text}</p>}
               </Reveal>
             </li>
           );

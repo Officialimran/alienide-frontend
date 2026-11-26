@@ -16,6 +16,31 @@ const icons = {
 
 export type SocialName = keyof typeof icons;
 
+/** Matches a CMS platform name/label ("facebook", "YouTube") to a bundled glyph. */
+export function toSocialName(label: string): SocialName | undefined {
+  const key = label.trim().toLowerCase();
+  return (Object.keys(icons) as SocialName[]).find((name) => name.toLowerCase() === key);
+}
+
+/** Domains per bundled glyph, so a link is recognised even when its label is custom. */
+const socialDomains: Record<SocialName, RegExp> = {
+  Facebook: /(^|\.)(facebook\.com|fb\.com|fb\.me)$/i,
+  Instagram: /(^|\.)(instagram\.com|instagr\.am)$/i,
+  Youtube: /(^|\.)(youtube\.com|youtu\.be)$/i,
+};
+
+/** Bundled glyph for a social link, from its label or else its URL's domain. */
+export function matchSocialName(label: string, href: string): SocialName | undefined {
+  const byLabel = toSocialName(label);
+  if (byLabel) return byLabel;
+  try {
+    const host = new URL(href).hostname;
+    return (Object.keys(socialDomains) as SocialName[]).find((name) => socialDomains[name].test(host));
+  } catch {
+    return undefined;
+  }
+}
+
 export function SocialIcon({ name, className }: { name: SocialName; className?: string }) {
   const icon = icons[name];
   return (

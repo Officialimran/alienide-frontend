@@ -31,11 +31,15 @@ export function PageBanner({ solid, outline, image, crumbs, variant = "page" }: 
   return (
     <section
       className={cn(
-        "relative flex flex-col justify-end overflow-hidden bg-dark bg-cover bg-center",
+        "relative flex flex-col justify-end overflow-hidden bg-dark",
         compact ? "min-h-[350px] lg:min-h-[450px]" : "min-h-[430px] md:min-h-[530px] lg:min-h-[630px] xl:min-h-[730px]",
       )}
-      style={{ backgroundImage: `url(${image})` }}
     >
+      <div
+        aria-hidden="true"
+        className="ken-burns absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${image})` }}
+      />
       <div aria-hidden="true" className="absolute inset-0 bg-black/50" />
       {archive && (
         <div

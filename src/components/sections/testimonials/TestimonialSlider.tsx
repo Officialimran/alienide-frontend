@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import type { Swiper as SwiperInstance } from "swiper";
 import { Autoplay, Keyboard } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import { CmsImage } from "@/components/ui/CmsImage";
 import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
 import type { Testimonial } from "@/types";
@@ -47,16 +47,11 @@ export function TestimonialSlider({ items }: { items: Testimonial[] }) {
         }}
         onSlideChange={(s) => setActive(s.realIndex)}
       >
-        {items.map((t) => (
-          <SwiperSlide key={t.name}>
+        {items.map((t, i) => (
+          <SwiperSlide key={`${t.name}-${i}`}>
             <blockquote className="m-0 px-[20px] text-center md:px-[90px]">
-              <p className="m-0 mb-[30px] font-unbounded text-[22px] leading-[1.5] font-normal text-accent md:text-[24px] lg:text-[30px]">
-                {t.quote.map((line, i) => (
-                  <span key={i}>
-                    {line}
-                    {i < t.quote.length - 1 && <br />}
-                  </span>
-                ))}
+              <p className="m-0 mb-[30px] font-unbounded text-[22px] leading-[1.5] font-normal whitespace-pre-line text-accent md:text-[24px] lg:text-[30px]">
+                “{t.quote.trim()}”
               </p>
             </blockquote>
           </SwiperSlide>
@@ -88,10 +83,10 @@ export function TestimonialSlider({ items }: { items: Testimonial[] }) {
             const isActive = slot === "active";
             return (
               <button
-                key={t.name}
+                key={`${t.name}-${i}`}
                 type="button"
                 onClick={() => swiperRef.current?.slideToLoop(i)}
-                aria-label={`Show testimonial from ${t.name.replace(/\s*,\s*$/, "")}`}
+                aria-label={`Show testimonial from ${t.name}`}
                 aria-current={isActive}
                 className={cn(
                   "absolute top-0 w-full cursor-pointer flex-col items-center transition-[left] duration-300",
@@ -99,31 +94,45 @@ export function TestimonialSlider({ items }: { items: Testimonial[] }) {
                 )}
               >
                 <span className="mb-[50px] flex min-h-[90px] items-center">
-                  <Image
-                    src={t.avatar}
-                    alt=""
-                    width={90}
-                    height={90}
-                    className={cn(
-                      "rounded-full object-cover transition-all duration-300",
-                      isActive ? "h-[90px] w-[90px]" : "h-[60px] w-[60px]",
-                    )}
-                  />
+                  {t.avatar ? (
+                    <CmsImage
+                      src={t.avatar}
+                      alt=""
+                      width={90}
+                      height={90}
+                      className={cn(
+                        "rounded-full object-cover transition-all duration-300",
+                        isActive ? "h-[90px] w-[90px]" : "h-[60px] w-[60px]",
+                      )}
+                    />
+                  ) : (
+                    <span
+                      className={cn(
+                        "flex items-center justify-center rounded-full bg-primary font-anton text-accent uppercase transition-all duration-300",
+                        isActive ? "h-[90px] w-[90px] text-[36px]" : "h-[60px] w-[60px] text-[24px]",
+                      )}
+                    >
+                      {t.name.charAt(0)}
+                    </span>
+                  )}
                 </span>
               </button>
             );
           })}
           {items.map((t, i) => (
             <p
-              key={t.name}
+              key={`${t.name}-${i}`}
               aria-hidden={i !== active}
               className={cn(
                 "pointer-events-none absolute bottom-0 left-1/2 m-0 flex -translate-x-1/2 gap-2 font-anton text-[18px] whitespace-nowrap uppercase transition-opacity duration-300",
                 i === active ? "opacity-100" : "opacity-0",
               )}
             >
-              <span className="text-accent">{t.name}</span>
-              <span className="text-muted">{t.source}</span>
+              <span className="text-accent">
+                {t.name}
+                {t.source ? "," : ""}
+              </span>
+              {t.source && <span className="text-muted">{t.source}</span>}
             </p>
           ))}
         </div>

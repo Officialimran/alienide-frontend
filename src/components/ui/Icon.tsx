@@ -33,6 +33,11 @@ const glyphs = {
 
 export type IconName = keyof typeof glyphs;
 
+/** True when the theme's icon font has a glyph with this name (e.g. a platform slug). */
+export function isIconName(name: string | null | undefined): name is IconName {
+  return Boolean(name) && Object.prototype.hasOwnProperty.call(glyphs, name as string);
+}
+
 interface IconProps {
   name: IconName;
   className?: string;

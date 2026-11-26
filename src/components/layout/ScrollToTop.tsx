@@ -9,10 +9,27 @@ export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setVisible(window.scrollY > 300);
-    onScroll();
+    // Throttled to one check per frame, and React is only touched when the
+    // button actually crosses the 300px threshold.
+    let frame = 0;
+    let shown = false;
+    const check = () => {
+      frame = 0;
+      const next = window.scrollY > 300;
+      if (next !== shown) {
+        shown = next;
+        setVisible(next);
+      }
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(check);
+    };
+    check();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   return (

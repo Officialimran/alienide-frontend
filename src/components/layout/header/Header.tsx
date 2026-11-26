@@ -1,14 +1,26 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
-import { mainNav } from "@/data/site";
+import type { NavLink } from "@/types";
 import { DesktopNav } from "./DesktopNav";
 import { Logo } from "./Logo";
 import { MobileMenu } from "./MobileMenu";
 
+interface HeaderProps {
+  /** Header menu from the CMS. */
+  items: NavLink[];
+  /** Logo shown over the dark hero. */
+  logo?: string;
+  /** Logo for the white mobile drawer. */
+  drawerLogo?: string;
+  /** Optional call-to-action (Site options → header button). */
+  button?: { label: string; href: string; newTab: boolean };
+}
+
 /** Transparent header that sits over the hero (not sticky, as on the original). */
-export function Header() {
+export function Header({ items, logo, drawerLogo, button }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -29,16 +41,24 @@ export function Header() {
           </div>
 
           <div className="flex items-center lg:flex-1">
-            <Logo priority className="lg:pr-[25px] xl:pr-[75px] 2xl:pr-[150px]" />
-            <DesktopNav items={mainNav} className="hidden lg:block" />
+            <Logo src={logo} priority className="lg:pr-[25px] xl:pr-[75px] 2xl:pr-[150px]" />
+            <DesktopNav items={items} className="hidden lg:block" />
           </div>
 
-          {/* Keeps the logo centred between the menu button and the edge on small screens. */}
-          <div aria-hidden="true" className="lg:hidden" />
+          {button ? (
+            <div className="hidden justify-end lg:flex">
+              <ButtonLink href={button.href} newTab={button.newTab} className="!px-[30px] !py-[12px]">
+                {button.label}
+              </ButtonLink>
+            </div>
+          ) : (
+            // Keeps the logo centred between the menu button and the edge on small screens.
+            <div aria-hidden="true" className="lg:hidden" />
+          )}
         </div>
       </header>
 
-      <MobileMenu open={menuOpen} onClose={closeMenu} items={mainNav} />
+      <MobileMenu open={menuOpen} onClose={closeMenu} items={items} logo={drawerLogo} />
     </>
   );
 }

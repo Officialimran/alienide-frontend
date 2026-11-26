@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/ButtonLink";
+import { MotionFx } from "@/components/ui/MotionFx";
 import { Reveal } from "@/components/ui/Reveal";
 import { SubscribeForm } from "./SubscribeForm";
 
@@ -11,13 +12,15 @@ export function NewsletterSection() {
         <div className="mb-[30px] flex flex-col items-center rounded-[20px] bg-white px-[15px] md:flex-row md:items-stretch md:pr-[30px] md:pl-[25px] lg:mr-[30px] lg:mb-0 lg:w-[65%] xl:rounded-[40px] 2xl:pr-[80px]">
           {/* Image (333px) and copy (360px) shrink proportionally when space is tight, like the original. */}
           <Reveal className="order-last self-center md:order-none md:mr-[52px] md:-mt-[65px] md:min-w-0 md:shrink md:basis-[333px] md:self-end">
-            <Image
-              src="/images/h1_img-5.png"
-              alt="Happy kid holding a game console"
-              width={333}
-              height={461}
-              className="w-[250px] md:w-full"
-            />
+            <MotionFx scrollX={{ speed: 0.8 }} minWidth={768}>
+              <Image
+                src="/images/h1_img-5.png"
+                alt="Happy kid holding a game console"
+                width={333}
+                height={461}
+                className="w-[250px] md:w-full"
+              />
+            </MotionFx>
           </Reveal>
           <div className="flex w-full max-w-[360px] flex-col justify-center py-[30px] text-center md:min-w-0 md:shrink md:basis-[360px] md:text-left">
             <Reveal
@@ -38,14 +41,24 @@ export function NewsletterSection() {
 
         {/* Careers card */}
         <div className="relative flex items-center justify-center rounded-[20px] bg-dark bg-[url(/images/h1_deco-2.png)] bg-right-bottom bg-no-repeat px-[15px] py-[30px] md:px-[30px] lg:w-[35%] xl:rounded-[40px]">
-          <Reveal className="absolute top-[-100px] left-[-24px] hidden md:block">
-            <Image src="/images/h1_img-6.png" alt="" width={215} height={204} />
+          <Reveal animation="scale-up" className="absolute top-[-100px] left-[-24px] hidden md:block">
+            <MotionFx mouseTrack={{ speed: 0.5 }}>
+              <Image src="/images/h1_img-6.png" alt="" width={215} height={204} />
+            </MotionFx>
           </Reveal>
-          <Reveal className="absolute top-[14px] right-[-66px] max-md:right-[-20px] max-md:w-[100px]">
-            <Image src="/images/h1_img-7.png" alt="" width={152} height={152} />
+          <Reveal
+            animation="scale-up"
+            delay={100}
+            className="absolute top-[14px] right-[-66px] max-md:right-[-20px] max-md:w-[100px]"
+          >
+            <MotionFx mouseTrack={{ speed: 0.3, negative: true }}>
+              <Image src="/images/h1_img-7.png" alt="" width={152} height={152} />
+            </MotionFx>
           </Reveal>
-          <Reveal className="absolute bottom-[-7px] left-[-6px]">
-            <Image src="/images/h1_img-8.png" alt="" width={112} height={112} />
+          <Reveal animation="scale-up" delay={200} className="absolute bottom-[-7px] left-[-6px]">
+            <MotionFx mouseTrack={{ speed: 0.4 }}>
+              <Image src="/images/h1_img-8.png" alt="" width={112} height={112} />
+            </MotionFx>
           </Reveal>
 
           <div className="relative z-[1] max-w-[250px] text-center lg:text-left">

@@ -1,10 +1,11 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { DisplayTitle } from "@/components/ui/DisplayTitle";
 import { Reveal } from "@/components/ui/Reveal";
-import { projects } from "@/data/site";
+import type { Project } from "@/types";
 import { StackedProjects } from "./StackedProjects";
 
-export function GamesSection() {
+/** Home: featured projects (GET /projects?featured=1) as a sticky card stack. */
+export function GamesSection({ projects, allHref }: { projects: Project[]; allHref?: string }) {
   return (
     <section
       id="projects"
@@ -17,13 +18,15 @@ export function GamesSection() {
           </Reveal>
         </div>
 
-        <div className="order-last mt-10 flex w-full justify-center md:order-none md:mt-0 md:w-1/2 md:items-end md:justify-end">
-          <Reveal>
-            <ButtonLink href="/projects" className="max-md:!px-[25px] max-md:!py-[15px]">
-              view all games
-            </ButtonLink>
-          </Reveal>
-        </div>
+        {allHref && (
+          <div className="order-last mt-10 flex w-full justify-center md:order-none md:mt-0 md:w-1/2 md:items-end md:justify-end">
+            <Reveal>
+              <ButtonLink href={allHref} className="max-md:!px-[25px] max-md:!py-[15px]">
+                view all games
+              </ButtonLink>
+            </Reveal>
+          </div>
+        )}
 
         <Reveal className="mt-[60px] w-full xl:mt-[80px]">
           <StackedProjects projects={projects} />

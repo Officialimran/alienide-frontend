@@ -1,29 +1,24 @@
-import { AboutSection } from "@/components/sections/AboutSection";
-import { AwardsSection } from "@/components/sections/AwardsSection";
-import { CapabilitiesSection } from "@/components/sections/CapabilitiesSection";
-import { CtaSection } from "@/components/sections/CtaSection";
-import { GamesSection } from "@/components/sections/games/GamesSection";
-import { HeroSection } from "@/components/sections/hero/HeroSection";
-import { NewsletterSection } from "@/components/sections/newsletter/NewsletterSection";
-import { PartnersSection } from "@/components/sections/partners/PartnersSection";
-import { ServicesMarquee } from "@/components/sections/ServicesMarquee";
-import { TeamSection } from "@/components/sections/team/TeamSection";
-import { TestimonialsSection } from "@/components/sections/testimonials/TestimonialsSection";
+import type { Metadata } from "next";
+import { siteConfig } from "@/config/site";
+import { getPages } from "@/lib/api/cms";
+import { getSiteRoutes, TEMPLATE } from "@/lib/routes";
+import { pageMetadata } from "@/lib/seo";
+import { LandingTemplate } from "@/templates/LandingTemplate";
+import type { SearchParams } from "@/templates/types";
 
-export default function HomePage() {
-  return (
-    <>
-      <HeroSection />
-      <ServicesMarquee />
-      <AboutSection />
-      <GamesSection />
-      <CtaSection />
-      <CapabilitiesSection />
-      <AwardsSection />
-      <TeamSection />
-      <TestimonialsSection />
-      <PartnersSection />
-      <NewsletterSection />
-    </>
-  );
+/** The home page is the newest active CMS page using the "landing" template. */
+async function getLandingPage() {
+  const [page] = await getPages(TEMPLATE.landing);
+  return page ?? null;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getLandingPage();
+  if (!page) return { title: { absolute: siteConfig.name } };
+  return pageMetadata(page, "/", { absoluteTitle: true });
+}
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const [page, routes, params] = await Promise.all([getLandingPage(), getSiteRoutes(), searchParams]);
+  return <LandingTemplate page={page} path="/" searchParams={params} routes={routes} />;
 }

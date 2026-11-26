@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { CmsImage } from "@/components/ui/CmsImage";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/Icon";
@@ -50,7 +50,7 @@ export function Lightbox({ images, index, onChange }: LightboxProps) {
       onClick={() => onChange(null)}
     >
       <figure className="relative m-0 max-h-full w-full max-w-[1200px]" onClick={(e) => e.stopPropagation()}>
-        <Image
+        <CmsImage
           src={image.src}
           alt={image.alt}
           width={1200}

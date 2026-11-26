@@ -4,7 +4,12 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/footer/Footer";
 import { Header } from "@/components/layout/header/Header";
 import { ScrollToTop } from "@/components/layout/ScrollToTop";
-import { siteConfig } from "@/data/site";
+import { siteConfig } from "@/config/site";
+import { getNavigation } from "@/lib/api/cms";
+import type { ApiNavigation } from "@/lib/api/types";
+import { getFooterMenu, getHeaderMenu, toNavLinks } from "@/lib/navigation";
+import { getSiteRoutes, TEMPLATE, type SiteRoutes } from "@/lib/routes";
+import { EMPTY_SETTINGS, getSiteSettings } from "@/lib/settings";
 import "./globals.css";
 
 const anton = Anton({
@@ -22,31 +27,56 @@ const unbounded = Unbounded({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: `${siteConfig.name} – ${siteConfig.tagline}`,
+    default: siteConfig.name,
     template: `%s – ${siteConfig.name}`,
   },
-  description: siteConfig.description,
-  openGraph: {
-    title: `${siteConfig.name} – ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    type: "website",
-    images: ["/images/h1-bgvideo.jpg"],
-  },
+  openGraph: { siteName: siteConfig.name, type: "website" },
 };
 
 export const viewport: Viewport = {
   themeColor: "#252525",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+/** The header/footer must still render (e.g. on error pages) if the API is unreachable. */
+async function orFallback<T>(promise: Promise<T>, fallback: T, label: string): Promise<T> {
+  try {
+    return await promise;
+  } catch (error) {
+    console.error(`[layout] Could not load ${label}:`, error);
+    return fallback;
+  }
+}
+
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const [navigation, settings, routes] = await Promise.all([
+    orFallback<ApiNavigation>(getNavigation(), {}, "navigation"),
+    orFallback(getSiteSettings(), EMPTY_SETTINGS, "site options"),
+    orFallback<SiteRoutes>(getSiteRoutes(), { byTemplate: {} }, "page routes"),
+  ]);
+
+  const headerLinks = toNavLinks(getHeaderMenu(navigation)?.items, routes.landingSlug);
+  const footerLinks = toNavLinks(getFooterMenu(navigation)?.items, routes.landingSlug);
+
   return (
     <html lang="en" className={`${anton.variable} ${unbounded.variable}`}>
       <body>
-        <Header />
+        <Header
+          items={headerLinks}
+          logo={settings.headerLogo}
+          drawerLogo={settings.footerLogo ?? settings.headerLogo}
+          button={settings.headerButton}
+        />
         <main>{children}</main>
-        <Footer />
+        <Footer
+          settings={settings}
+          columns={footerLinks
+            .filter((link) => link.children?.length)
+            .map((link) => ({ title: link.label, links: link.children ?? [] }))}
+          bottomLinks={footerLinks.filter((link) => !link.children?.length)}
+          contactHref={routes.byTemplate[TEMPLATE.contact]}
+        />
         <ScrollToTop />
       </body>
     </html>

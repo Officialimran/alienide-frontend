@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
+import { RichText } from "@/components/ui/RichText";
 import { cn } from "@/lib/cn";
-import type { ServiceDetail } from "@/data/services";
+import type { ServiceRowData } from "@/types";
 
 interface ServiceRowProps {
-  service: ServiceDetail;
+  service: ServiceRowData;
   first?: boolean;
   last?: boolean;
 }
+
+const tagClass =
+  "btn !rounded-[30px] bg-white !px-[23px] !py-[9px] text-accent hover:!rounded-[30px] hover:text-white focus-visible:text-white";
 
 /**
  * Full-width dark row. Its photo sits under an opaque overlay that thins on
@@ -20,7 +24,7 @@ export function ServiceRow({ service, first, last }: ServiceRowProps) {
         "group relative overflow-hidden bg-dark bg-cover bg-center",
         first && "z-10 -mt-[60px] rounded-section mx:-mt-[80px] xl:-mt-[150px]",
       )}
-      style={{ backgroundImage: `url(${service.image})` }}
+      style={service.image ? { backgroundImage: `url("${service.image}")` } : undefined}
     >
       <div
         aria-hidden="true"
@@ -41,30 +45,33 @@ export function ServiceRow({ service, first, last }: ServiceRowProps) {
               as="h2"
               className="m-0 mb-[30px] font-anton text-[42px] leading-[1.2] font-normal text-white uppercase md:mb-0 md:text-[54px]"
             >
-              <Link href={`/services/${service.slug}`} className="transition-colors duration-300 hover:text-primary">
-                {service.title}
-              </Link>
+              {service.href ? (
+                <Link href={service.href} className="transition-colors duration-300 hover:text-primary">
+                  {service.title}
+                </Link>
+              ) : (
+                service.title
+              )}
             </Reveal>
           </div>
 
           <Reveal className="w-full md:w-1/2 mx:w-[55%] xl:w-[60%]">
-            <ul className="m-0 mb-[35px] flex list-none flex-wrap gap-5 p-0">
-              {service.tags.map((tag) => (
-                <li key={tag}>
-                  <Link
-                    href="#"
-                    className="btn !rounded-[30px] bg-white !px-[23px] !py-[9px] text-accent hover:!rounded-[30px] hover:text-white focus-visible:text-white"
-                  >
-                    {tag}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {service.paragraphs.map((p, i) => (
-              <p key={i} className={cn("m-0 text-muted", i === 0 && "mb-6")}>
-                {p}
-              </p>
-            ))}
+            {service.tags.length > 0 && (
+              <ul className="m-0 mb-[35px] flex list-none flex-wrap gap-5 p-0">
+                {service.tags.map((tag) => (
+                  <li key={tag.label}>
+                    {tag.href ? (
+                      <Link href={tag.href} className={tagClass}>
+                        {tag.label}
+                      </Link>
+                    ) : (
+                      <span className={tagClass}>{tag.label}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <RichText html={service.html} className="text-muted [&_p]:m-0 [&_p+p]:mt-6" />
           </Reveal>
         </div>
       </div>

@@ -10,6 +10,8 @@ interface ButtonLinkProps {
   children: ReactNode;
   variant?: Variant;
   className?: string;
+  /** Open in a new tab (links set to "_blank" in the CMS). */
+  newTab?: boolean;
 }
 
 const variants: Record<Variant, string> = {
@@ -19,9 +21,14 @@ const variants: Record<Variant, string> = {
 };
 
 /** Theme button: label + rotating ↗ arrow. */
-export function ButtonLink({ href, children, variant = "primary", className }: ButtonLinkProps) {
+export function ButtonLink({ href, children, variant = "primary", className, newTab }: ButtonLinkProps) {
   return (
-    <Link href={href} className={cn(variants[variant], className)}>
+    <Link
+      href={href}
+      className={cn(variants[variant], className)}
+      target={newTab ? "_blank" : undefined}
+      rel={newTab ? "noopener noreferrer" : undefined}
+    >
       <span>{children}</span>
       <Icon name="arrow-top-right" />
     </Link>

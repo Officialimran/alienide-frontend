@@ -6,6 +6,8 @@ interface Option {
 }
 
 interface ProjectFilterProps {
+  /** Path of the listing page the form submits to. */
+  action: string;
   platforms: Option[];
   genres: Option[];
   platform?: string;
@@ -50,9 +52,9 @@ function FilterSelect({ id, label, name, options, value, allLabel }: {
  * GET form, like the original: submitting updates the URL (?platforms=&genres=).
  * next/form navigates client-side and still works without JavaScript.
  */
-export function ProjectFilter({ platforms, genres, platform, genre }: ProjectFilterProps) {
+export function ProjectFilter({ action, platforms, genres, platform, genre }: ProjectFilterProps) {
   return (
-    <Form action="/projects" className="-mx-[15px] mb-[10px] flex flex-wrap items-end">
+    <Form action={action} className="-mx-[15px] mb-[10px] flex flex-wrap items-end">
       <FilterSelect id="filter-platform" label="Filter by platform" name="platforms" options={platforms} value={platform} allLabel="All Platforms" />
       <FilterSelect id="filter-genre" label="Filter by genre" name="genres" options={genres} value={genre} allLabel="All Genres" />
       <div className="mb-5 px-[15px]">

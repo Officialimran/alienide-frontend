@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
+import { CmsImage } from "@/components/ui/CmsImage";
+import { useRef, useState } from "react";
+import { usePauseOffscreen } from "@/hooks/usePauseOffscreen";
 import { Lightbox, type LightboxImage } from "@/components/ui/Lightbox";
 import { cn } from "@/lib/cn";
 
@@ -20,10 +21,13 @@ interface ImageMarqueeProps {
  */
 export function ImageMarquee({ images, reverse, secondsPerImage = 40, className }: ImageMarqueeProps) {
   const [active, setActive] = useState<number | null>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  usePauseOffscreen(stripRef);
 
   return (
     <>
       <div
+        ref={stripRef}
         className={cn("group/strip flex overflow-hidden", className)}
         style={{ ["--marquee-duration" as string]: `${images.length * secondsPerImage}s` }}
       >
@@ -48,7 +52,7 @@ export function ImageMarquee({ images, reverse, secondsPerImage = 40, className 
                   aria-label={`Enlarge photo: ${image.alt}`}
                   className="group/photo relative block h-[240px] w-full cursor-zoom-in overflow-hidden rounded-[20px] md:h-auto md:aspect-[3/2]"
                 >
-                  <Image
+                  <CmsImage
                     src={image.src}
                     alt={copy > 0 ? "" : image.alt}
                     fill

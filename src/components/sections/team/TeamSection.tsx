@@ -1,10 +1,11 @@
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { DisplayTitle } from "@/components/ui/DisplayTitle";
 import { Reveal } from "@/components/ui/Reveal";
-import { team } from "@/data/site";
+import type { TeamMember } from "@/types";
 import { TeamGrid } from "./TeamGrid";
 
-export function TeamSection() {
+/** Home: featured team members (GET /team-members?featured=1). */
+export function TeamSection({ members, allHref }: { members: TeamMember[]; allHref?: string }) {
   return (
     <section
       id="team"
@@ -15,16 +16,18 @@ export function TeamSection() {
           <DisplayTitle solid="definitive" outline="Team" />
         </Reveal>
 
-        <div className="order-last mt-[30px] flex w-full justify-center md:order-none md:mt-0 md:w-1/2 md:items-end md:justify-end">
-          <Reveal>
-            <ButtonLink href="#team" className="max-md:!px-[25px] max-md:!py-[15px]">
-              meet all members
-            </ButtonLink>
-          </Reveal>
-        </div>
+        {allHref && (
+          <div className="order-last mt-[30px] flex w-full justify-center md:order-none md:mt-0 md:w-1/2 md:items-end md:justify-end">
+            <Reveal>
+              <ButtonLink href={allHref} className="max-md:!px-[25px] max-md:!py-[15px]">
+                meet all members
+              </ButtonLink>
+            </Reveal>
+          </div>
+        )}
 
         <Reveal className="mt-[30px] w-full md:mt-[60px] lg:mt-[80px]">
-          <TeamGrid members={team} />
+          <TeamGrid members={members} />
         </Reveal>
       </div>
     </section>

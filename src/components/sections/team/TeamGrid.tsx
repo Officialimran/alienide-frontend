@@ -72,7 +72,7 @@ export function TeamGrid({ members, gridClassName = defaultGrid, trailing }: Tea
       >
         {members.map((member, i) => (
           <li
-            key={member.name}
+            key={`${member.name}-${i}`}
             className={cn("transition-all duration-300", open && "scale-[0.8] opacity-0")}
             style={{ transitionDelay: open ? `${i * 50}ms` : "0ms" }}
           >
@@ -122,8 +122,8 @@ export function TeamGrid({ members, gridClassName = defaultGrid, trailing }: Tea
             swiperRef.current = s;
           }}
         >
-          {members.map((member) => (
-            <SwiperSlide key={member.name}>
+          {members.map((member, i) => (
+            <SwiperSlide key={`${member.name}-${i}`}>
               <TeamSlide member={member} />
             </SwiperSlide>
           ))}

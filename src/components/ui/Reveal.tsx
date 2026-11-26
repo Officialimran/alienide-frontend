@@ -4,7 +4,8 @@ import type { ElementType, HTMLAttributes, ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/cn";
 
-type Animation = "move-up" | "scale-up";
+/** "image": wipe-in frame with a zoom-out picture (see globals.css). */
+type Animation = "move-up" | "scale-up" | "image";
 
 interface RevealProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
@@ -37,7 +38,8 @@ export function Reveal({
       style={delay ? { ...style, animationDelay: `${delay}ms` } : style}
       {...rest}
     >
-      {children}
+      {/* The wipe clips an inner frame: a fully clipped observed element never reports as in view. */}
+      {animation === "image" ? <div className="reveal-image-frame">{children}</div> : children}
     </Tag>
   );
 }

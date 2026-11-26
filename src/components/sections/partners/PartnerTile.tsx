@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
+import { CmsImage } from "@/components/ui/CmsImage";
 import { Icon } from "@/components/ui/Icon";
-import type { Partner } from "@/data/partners";
 import { cn } from "@/lib/cn";
+import type { Partner } from "@/types";
 
 /** Three wordmark treatments so placeholder logos don't all look alike. */
 function PlaceholderMark({ partner, variant }: { partner: Partner; variant: number }) {
@@ -38,7 +38,7 @@ function PlaceholderMark({ partner, variant }: { partner: Partner; variant: numb
  */
 export function PartnerTile({ partner, index }: { partner: Partner; index: number }) {
   const content = partner.logo ? (
-    <Image
+    <CmsImage
       src={partner.logo.src}
       alt={partner.name}
       width={partner.logo.width}
