@@ -7,7 +7,7 @@ import { humanizeKey } from "@/lib/text";
 /**
  * Site options (GET /options) in the shape the UI uses.
  * Groups / keys follow the backend's option definitions:
- *   header:  header_logo (image), header_button (button)
+ *   header:  header_logo (image), header_button (button), header_favicon (image)
  *   footer:  footer_logo (image), footer_content (editor), copyright_text (text)
  *   contact: contact_* (contact: value / url / icon)
  *   social:  social_links (social_links)
@@ -34,6 +34,8 @@ export interface SocialLink {
 }
 
 export interface SiteSettings {
+  /** Browser-tab icon (Site options → header favicon). */
+  favicon?: string;
   headerLogo?: string;
   headerButton?: { label: string; href: string; newTab: boolean };
   footerLogo?: string;
@@ -97,6 +99,7 @@ export function toSiteSettings(options: ApiOptions): SiteSettings {
   const find = (k: string) => contacts.find((c) => c.key === k);
 
   return {
+    favicon: mediaUrl(str(header.header_favicon)),
     headerLogo: mediaUrl(str(header.header_logo)),
     headerButton:
       button?.text && button.url ? { label: button.text, href: button.url, newTab: button.new_tab } : undefined,

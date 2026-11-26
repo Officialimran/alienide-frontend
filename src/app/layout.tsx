@@ -26,19 +26,6 @@ const unbounded = Unbounded({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: siteConfig.name,
-    template: `%s – ${siteConfig.name}`,
-  },
-  openGraph: { siteName: siteConfig.name, type: "website" },
-};
-
-export const viewport: Viewport = {
-  themeColor: "#252525",
-};
-
 /** The header/footer must still render (e.g. on error pages) if the API is unreachable. */
 async function orFallback<T>(promise: Promise<T>, fallback: T, label: string): Promise<T> {
   try {
@@ -48,6 +35,44 @@ async function orFallback<T>(promise: Promise<T>, fallback: T, label: string): P
     return fallback;
   }
 }
+
+/** Fallback favicon (public/favicon.ico) when the CMS has none or is unreachable. */
+const DEFAULT_FAVICON = "/favicon.ico";
+
+const ICON_TYPES: Record<string, string> = {
+  ico: "image/x-icon",
+  png: "image/png",
+  svg: "image/svg+xml",
+  webp: "image/webp",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+};
+
+function iconType(src: string): string | undefined {
+  const ext = src.split(/[?#]/)[0].split(".").pop()?.toLowerCase();
+  return ext ? ICON_TYPES[ext] : undefined;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await orFallback(getSiteSettings(), EMPTY_SETTINGS, "site options");
+  const favicon = settings.favicon ?? DEFAULT_FAVICON;
+  const icon = { url: favicon, type: iconType(favicon) };
+
+  return {
+    metadataBase: new URL(siteConfig.url),
+    title: {
+      default: siteConfig.name,
+      template: `%s – ${siteConfig.name}`,
+    },
+    openGraph: { siteName: siteConfig.name, type: "website" },
+    icons: { icon: [icon], shortcut: [favicon], apple: [icon] },
+  };
+}
+
+export const viewport: Viewport = {
+  themeColor: "#252525",
+};
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const [navigation, settings, routes] = await Promise.all([
